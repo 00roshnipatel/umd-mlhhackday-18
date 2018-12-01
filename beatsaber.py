@@ -19,10 +19,13 @@ def flatten_contour(l):
             points.append(( p[0][0],p[0][1] ))
     return points
 
+SCREEN_WIDTH = 640
+SCREEN_HEIGHT = 480
+
 cap = cv2.VideoCapture(0)
 fgbg = cv2.createBackgroundSubtractorMOG2(history=20, varThreshold=25, detectShadows=True)
 
-game_manager = GameManager()
+game_manager = GameManager((SCREEN_WIDTH, SCREEN_HEIGHT))
 renderer = Renderer(game_manager)
 
 curr_time = time.time()
