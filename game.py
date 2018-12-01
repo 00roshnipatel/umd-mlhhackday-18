@@ -13,6 +13,7 @@ class Bubble:
         self.y = y
         self.r = r
         self.sprite_num = 0
+        self.dead_time = 3
 
     def detect_collision(self, coord):
         return (self.x-coord[0])**2 + (self.y-coord[1])**2 < self.r**2
@@ -23,6 +24,10 @@ class Renderer:
     def __init__(self, gm):
         self.fnt = ImageFont.truetype('assets/UbuntuMono-R.ttf', 40)
         self.bubble_imgs = [
+            Image.open('assets/taco.png'),
+            Image.open('assets/taco2.png'),
+        ]
+        self.bubble_pop_imgs = [
             Image.open('assets/taco.png'),
             Image.open('assets/taco2.png'),
         ]
@@ -41,14 +46,20 @@ class Renderer:
         for b in self.game_manager.bubbles:
             if b.y > 0 and b.y < self.game_manager.dim[1]:
                 b.sprite_num = (b.sprite_num + 1) % len(self.bubble_imgs)
-                base.paste(self.bubble_imgs[b.sprite_num], (b.x,b.y))
+                base.paste(self.bubble_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)))
+
+        for b in self.game_manager.dead_bubbles:
+            if b.y > 0 and b.y < self.game_manager.dim[1]:
+                b.sprite_num = min(b.sprite_num + 1, len(self.bubble_pop_imgs)-1)
+                base.paste(self.bubble_pop_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)))
+
 
         # render score
         scoreboard = Image.new("RGB", (300, 50), "white")
         context = ImageDraw.Draw(scoreboard)
         context.text((10,0), "Score: " + str(self.game_manager.player_points), font=self.fnt, fill=(0,0,255))
         scoreboard = scoreboard.transpose(Image.FLIP_LEFT_RIGHT)
-        base.paste(scoreboard, (self.game_manager.dim[0]-310, 10))
+        base.paste(scoreboard, (self.game_manager.dim[0]-310, self.game_manager.dim[1] - 60))
 
         base = base.resize(( int(base.size[0]*1.5), int(base.size[1]*1.5) ), Image.NEAREST)
         return np.array(base)
@@ -58,7 +69,8 @@ class GameManager:
 
     def __init__(self, dim):
         self.player = []
-        self.bubbles = generate_bubbles(10000)
+        self.bubbles = beatmap2bubbles('assets/beatmap.csv')
+        self.dead_bubbles = []
         self.player_points = 0
         self.dim = dim
 
@@ -72,9 +84,17 @@ class GameManager:
             if b.y > 0 and b.y < self.dim[1]:
                 for p in self.player:
                     if b.detect_collision(p):
-                        self.player_points += 1
+                        self.player_points = min(self.player_points + 1, 999999)
+                        b.sprite_num = 0
+                        self.dead_bubbles.append(b)
                         self.bubbles.remove(b)
                         break
+
+        # process popped bubbles
+        for b in self.dead_bubbles:
+            b.dead_time -= time_step
+            if b.dead_time < 0:
+                self.dead_bubbles.remove(b)
 
     def reset(self):
         self.player_points = 0
@@ -93,12 +113,11 @@ def beatmap2bubbles(fname):
     """Convert beatmap to bubbles"""
     bubbles = []
     with open(fname, 'r') as f:
-        data = f.split('\n')
+        data = f.read().split('\n')
 
         for d in data:
             line = d.split(',')
-            if line[0] == 'L':
-                bubbles.append(Bubble(20, float(line[1]) * -100, 10))
-            elif line[0] == 'R':
-                bubbles.append(Bubble(620, float(line[1]) * -100, 10))
+            for i in range(1, 5):
+                if line[i]:
+                    bubbles.append(Bubble(20 + 150 * i - 75, int(float(line[0]) * -300) - 1000, 10))
     return bubbles
