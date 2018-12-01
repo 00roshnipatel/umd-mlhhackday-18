@@ -39,7 +39,7 @@ curr_time = time.time()
 chunk = 1024
 
 #open a wav format music
-fname = "assets/pq.wav"
+fname = "assets/bubbles.wav"
 f = wave.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), fname),"rb")
 #instantiate PyAudio
 p = pyaudio.PyAudio()
@@ -74,6 +74,8 @@ while cap.isOpened():
     c = cv2.waitKey(1)
     if c == ord('q'):
         break
+
+music.is_playing = False
 
 #stop stream
 stream.stop_stream()

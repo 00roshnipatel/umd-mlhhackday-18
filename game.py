@@ -12,6 +12,7 @@ class Bubble:
         self.x = x
         self.y = y
         self.r = r
+        self.sprite_num = 0
 
     def detect_collision(self, coord):
         return (self.x-coord[0])**2 + (self.y-coord[1])**2 < self.r**2
@@ -21,13 +22,15 @@ class Renderer:
 
     def __init__(self, gm):
         self.fnt = ImageFont.truetype('assets/UbuntuMono-R.ttf', 40)
-        self.bubble_img = Image.open('assets/taco.png')
+        self.bubble_imgs = [
+            Image.open('assets/taco.png'),
+            Image.open('assets/taco2.png'),
+        ]
 
         self.game_manager = gm
 
     def render(self):
         base = Image.new("RGB", (self.game_manager.dim[0], self.game_manager.dim[1]))
-        context = ImageDraw.Draw(base)
         pix = base.load()
 
         # render player
@@ -37,12 +40,17 @@ class Renderer:
         # render bubbles
         for b in self.game_manager.bubbles:
             if b.y > 0 and b.y < self.game_manager.dim[1]:
-                base.paste(self.bubble_img, (b.x,b.y))
+                b.sprite_num = (b.sprite_num + 1) % len(self.bubble_imgs)
+                base.paste(self.bubble_imgs[b.sprite_num], (b.x,b.y))
 
         # render score
-        context.text((10,60), "#" * self.game_manager.player_points, font=self.fnt, fill=(0,0,255))
+        scoreboard = Image.new("RGB", (300, 50), "white")
+        context = ImageDraw.Draw(scoreboard)
+        context.text((10,0), "Score: " + str(self.game_manager.player_points), font=self.fnt, fill=(0,0,255))
+        scoreboard = scoreboard.transpose(Image.FLIP_LEFT_RIGHT)
+        base.paste(scoreboard, (self.game_manager.dim[0]-310, 10))
 
-        #base.thumbnail((800, 800), Image.ANTIALIAS)
+        base = base.resize(( int(base.size[0]*1.5), int(base.size[1]*1.5) ), Image.NEAREST)
         return np.array(base)
 
 class GameManager:
@@ -71,7 +79,7 @@ class GameManager:
     def reset(self):
         self.player_points = 0
 
-# Helpers
+# === Helpers ===
 
 def generate_bubbles(n):
     """Generate random bubbles for testing"""
