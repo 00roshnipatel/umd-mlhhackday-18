@@ -1,9 +1,6 @@
 from PIL import Image, ImageFont, ImageDraw
 import numpy as np
 import random
-#from scipy import wavfile
-
-SPEED = 5
 
 class Bubble:
     """Game bubble"""
@@ -13,7 +10,7 @@ class Bubble:
         self.y = y
         self.r = r
         self.sprite_num = 0
-        self.dead_time = 3
+        self.dead_time = 1
 
     def detect_collision(self, coord):
         return (self.x-coord[0])**2 + (self.y-coord[1])**2 < self.r**2
@@ -79,7 +76,7 @@ class GameManager:
 
         # move bubbles down
         for b in self.bubbles:
-            b.y += SPEED
+            b.y += 100 * time_step # SPEED
 
             if b.y > 0 and b.y < self.dim[1]:
                 for p in self.player:
@@ -119,5 +116,5 @@ def beatmap2bubbles(fname):
             line = d.split(',')
             for i in range(1, 5):
                 if line[i]:
-                    bubbles.append(Bubble(20 + 150 * i - 75, int(float(line[0]) * -300) - 1000, 10))
+                    bubbles.append(Bubble(20 + 150 * i - 75, int(float(line[0]) * -190 + 400), 10))
     return bubbles
