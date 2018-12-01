@@ -32,18 +32,17 @@ while cap.isOpened():
     ret, frame = cap.read()
     thresh = fgbg.apply(frame)
     im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    img = cv2.drawContours(frame, cull_noise(contours), -1, (255, 255,255), 3)
+    #img = cv2.drawContours(frame, cull_noise(contours), -1, (255, 255,255), 3)
 
     # update time
     delta_time = time.time() - curr_time
     curr_time = time.time()
-    #print(delta_time)
-    
+
     # test output
     pts = flatten_contour(cull_noise(contours))
     game_manager.update(pts, delta_time)
-    render_img = renderer.render()
-    cv2.imshow('frame', cv2.flip(img, 1))
+    render = renderer.render()
+    cv2.imshow('frame', cv2.flip(render, 1))
 
     # exit keys
     c = cv2.waitKey(1)
@@ -52,4 +51,3 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
-

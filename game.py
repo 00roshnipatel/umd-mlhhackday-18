@@ -1,4 +1,6 @@
 from PIL import Image
+import numpy as np
+import random
 #from scipy import wavfile
 
 class Bubble:
@@ -21,16 +23,27 @@ class Renderer:
         self.game_manager = gm
 
     def render(self):
-        pass
+        base = Image.new("RGB", (800, 800))
+        pix = base.load()
+
+        # render player
+        for p in self.game_manager.player:
+            pix[int(p[0]), int(p[1])] = (255,255,255)
+
+        # render bubbles
+        for b in self.game_manager.bubbles:
+            if b.y > 0:
+                #base.paste(self.bubble_img, (b.x,b.y))
+                pass
+
+        return np.array(base)
 
 class GameManager:
     """Runs game"""
 
     def __init__(self):
         self.player = []
-        self.bubbles = [
-            Bubble(80, 0, 10),
-        ]
+        self.bubbles = generate_bubbles(10)
         self.player_points = 0
 
     def update(self, points, time_step):
@@ -38,7 +51,7 @@ class GameManager:
 
         # move bubbles down
         for b in self.bubbles:
-            #b.y -= 1
+            b.y += 1
             for p in self.player:
                 if b.detect_collision(p):
                     self.player_points += 1
@@ -49,9 +62,11 @@ class GameManager:
     def reset(self):
         self.player_points = 0
 
-class Track:
-    """Track info for songs"""
+# Helpers
 
-    def __init__(self):
-        self.song
-        self.beat_data = []
+def generate_bubbles(n):
+    bubbles = []
+    for i in range(n):
+        b = Bubble(random.randint(0, 800), i * -100, 10)
+        bubbles.append(b)
+    return bubbles
