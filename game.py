@@ -21,12 +21,15 @@ class Renderer:
     def __init__(self, gm):
         self.fnt = ImageFont.truetype('assets/UbuntuMono-R.ttf', 40)
         self.bubble_imgs = [
-            Image.open('assets/taco.png'),
-            Image.open('assets/taco2.png'),
+            Image.open('assets/turtle/bubble idle 1 inter.png').resize((100, 100), Image.NEAREST),
+            Image.open('assets/turtle/bubble idle 2.png').resize((100, 100), Image.NEAREST),
+            Image.open('assets/turtle/bubble idle 1 inter.png').resize((100, 100), Image.NEAREST),
+            Image.open('assets/turtle/bubble idle 1.png').resize((100, 100), Image.NEAREST),
         ]
         self.bubble_pop_imgs = [
-            Image.open('assets/taco.png'),
-            Image.open('assets/taco2.png'),
+            Image.open('assets/turtle/bubblePop1.png').resize((100, 100), Image.NEAREST),
+            Image.open('assets/turtle/bubblePop2.png').resize((100, 100), Image.NEAREST),
+            Image.open('assets/turtle/bubblePop3.png').resize((100, 100), Image.NEAREST),
         ]
 
         self.game_manager = gm
@@ -59,6 +62,7 @@ class Renderer:
         base.paste(scoreboard, (self.game_manager.dim[0]-310, self.game_manager.dim[1] - 60))
 
         base = base.resize(( int(base.size[0]*1.5), int(base.size[1]*1.5) ), Image.NEAREST)
+
         return np.array(base)
 
 class GameManager:
@@ -116,5 +120,5 @@ def beatmap2bubbles(fname):
             line = d.split(',')
             for i in range(1, 5):
                 if line[i]:
-                    bubbles.append(Bubble(20 + 150 * i - 75, int(float(line[0]) * -190 + 400), 10))
+                    bubbles.append(Bubble(20 + 150 * i - 75, int(float(line[0]) * -190 + 400), 20))
     return bubbles
