@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 import numpy as np
 import random
 #from scipy import wavfile
@@ -20,12 +20,14 @@ class Renderer:
     """Renders game"""
 
     def __init__(self, gm):
+        self.fnt = ImageFont.truetype('assets/UbuntuMono-R.ttf', 40)
         self.bubble_img = Image.open('assets/taco.png')
 
         self.game_manager = gm
 
     def render(self):
         base = Image.new("RGB", (self.game_manager.dim[0], self.game_manager.dim[1]))
+        context = ImageDraw.Draw(base)
         pix = base.load()
 
         # render player
@@ -36,6 +38,9 @@ class Renderer:
         for b in self.game_manager.bubbles:
             if b.y > 0 and b.y < self.game_manager.dim[1]:
                 base.paste(self.bubble_img, (b.x,b.y))
+
+        # render score
+        context.text((10,60), "#" * self.game_manager.player_points, font=self.fnt, fill=(0,0,255))
 
         #base.thumbnail((800, 800), Image.ANTIALIAS)
         return np.array(base)
@@ -61,7 +66,6 @@ class GameManager:
                     if b.detect_collision(p):
                         self.player_points += 1
                         self.bubbles.remove(b)
-                        print("score!")
                         break
 
     def reset(self):

@@ -1,8 +1,12 @@
 import cv2
 import numpy as np
 import time
+import wave, pyaudio
+import os
+import threading
 
 from game import *
+import music
 
 def cull_noise(points):
     """Tries to get rid of noise"""
@@ -30,6 +34,25 @@ renderer = Renderer(game_manager)
 
 curr_time = time.time()
 
+# === Music ===
+#define stream chunk
+chunk = 1024
+
+#open a wav format music
+fname = "assets/pq.wav"
+f = wave.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), fname),"rb")
+#instantiate PyAudio
+p = pyaudio.PyAudio()
+#open stream
+stream = p.open(format = p.get_format_from_width(f.getsampwidth()),
+                channels = f.getnchannels(),
+                rate = f.getframerate(),
+                output = True)
+#read data
+data = f.readframes(chunk)
+
+music_t = threading.Thread(target=music.play_music, args=(f,data,stream,chunk)).start()
+
 while cap.isOpened():
     # read in from webcam and do contours
     ret, frame = cap.read()
@@ -51,6 +74,13 @@ while cap.isOpened():
     c = cv2.waitKey(1)
     if c == ord('q'):
         break
+
+#stop stream
+stream.stop_stream()
+stream.close()
+
+#close PyAudio
+p.terminate()
 
 cap.release()
 cv2.destroyAllWindows()
