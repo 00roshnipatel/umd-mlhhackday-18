@@ -59,7 +59,7 @@ class Renderer:
         self.game_manager = gm
 
     def render(self):
-        base = Image.new("RGB", (self.game_manager.dim[0], self.game_manager.dim[1]))
+        base = Image.new("RGB", (self.game_manager.dim[0], self.game_manager.dim[1]), "black")
         pix = base.load()
 
         # render player
@@ -70,12 +70,12 @@ class Renderer:
         for b in self.game_manager.bubbles:
             if b.y > 0 and b.y < self.game_manager.dim[1]:
                 b.sprite_num = (b.sprite_num + 1) % len(self.bubble_imgs)
-                base.paste(self.bubble_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)))
+                base.paste(self.bubble_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)), self.bubble_imgs[b.sprite_num])
 
         for b in self.game_manager.dead_bubbles:
             if b.y > 0 and b.y < self.game_manager.dim[1]:
                 b.sprite_num = min(b.sprite_num + 1, len(self.bubble_pop_imgs)-1)
-                base.paste(self.bubble_pop_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)))
+                base.paste(self.bubble_pop_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)), self.bubble_pop_imgs[b.sprite_num])
 
 
         # render score
