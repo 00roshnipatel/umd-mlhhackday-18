@@ -68,7 +68,7 @@ while cap.isOpened():
     pts = flatten_contour(cull_noise(contours))
     game_manager.update(pts, delta_time)
     render = renderer.render()
-    cv2.imshow('frame', cv2.cvtColor(cv2.flip(render, 1), cv2.COLOR_BGR2RGB))
+    cv2.imshow('Bubbles', cv2.cvtColor(cv2.flip(render, 1), cv2.COLOR_BGR2RGB))
 
     # exit keys
     c = cv2.waitKey(1)

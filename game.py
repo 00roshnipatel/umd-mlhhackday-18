@@ -10,7 +10,7 @@ class Bubble:
         self.y = y
         self.r = r
         self.sprite_num = 0
-        self.dead_time = 1
+        self.dead_time = 0.2
 
     def detect_collision(self, coord):
         return (self.x-coord[0])**2 + (self.y-coord[1])**2 < self.r**2
@@ -19,17 +19,41 @@ class Renderer:
     """Renders game"""
 
     def __init__(self, gm):
-        self.fnt = ImageFont.truetype('assets/UbuntuMono-R.ttf', 40)
+
+        turtle_idle_1 = Image.open('assets/turtle/bubble idle 1 inter.png').resize((100, 100), Image.NEAREST)
+        turtle_idle_2 = Image.open('assets/turtle/bubble idle 2.png').resize((100, 100), Image.NEAREST)
+        turtle_idle_3 = Image.open('assets/turtle/bubble idle 1.png').resize((100, 100), Image.NEAREST)
+        turtle_pop_1 = Image.open('assets/turtle/bubblePop1.png').resize((100, 100), Image.NEAREST)
+        turtle_pop_2 = Image.open('assets/turtle/bubblePop2.png').resize((100, 100), Image.NEAREST)
+        turtle_pop_3 = Image.open('assets/turtle/bubblePop3.png').resize((100, 100), Image.NEAREST)
+
+        self.fnt = ImageFont.truetype('assets/fonts/PTC55F.ttf', 30)
         self.bubble_imgs = [
-            Image.open('assets/turtle/bubble idle 1 inter.png').resize((100, 100), Image.NEAREST),
-            Image.open('assets/turtle/bubble idle 2.png').resize((100, 100), Image.NEAREST),
-            Image.open('assets/turtle/bubble idle 1 inter.png').resize((100, 100), Image.NEAREST),
-            Image.open('assets/turtle/bubble idle 1.png').resize((100, 100), Image.NEAREST),
+            turtle_idle_1,
+            turtle_idle_1,
+            turtle_idle_1,
+            turtle_idle_1,
+            turtle_idle_1,
+            turtle_idle_2,
+            turtle_idle_2,
+            turtle_idle_2,
+            turtle_idle_2,
+            turtle_idle_2,
+            turtle_idle_1,
+            turtle_idle_1,
+            turtle_idle_1,
+            turtle_idle_1,
+            turtle_idle_1,
+            turtle_idle_3,
+            turtle_idle_3,
+            turtle_idle_3,
+            turtle_idle_3,
+            turtle_idle_3,
         ]
         self.bubble_pop_imgs = [
-            Image.open('assets/turtle/bubblePop1.png').resize((100, 100), Image.NEAREST),
-            Image.open('assets/turtle/bubblePop2.png').resize((100, 100), Image.NEAREST),
-            Image.open('assets/turtle/bubblePop3.png').resize((100, 100), Image.NEAREST),
+            turtle_pop_1,
+            turtle_pop_2,
+            turtle_pop_3,
         ]
 
         self.game_manager = gm
@@ -55,9 +79,9 @@ class Renderer:
 
 
         # render score
-        scoreboard = Image.new("RGB", (300, 50), "white")
+        scoreboard = Image.open("assets/ui/panel.png").resize((300, 50), Image.NEAREST)
         context = ImageDraw.Draw(scoreboard)
-        context.text((10,0), "Score: " + str(self.game_manager.player_points), font=self.fnt, fill=(0,0,255))
+        context.text((15,5), "SCORE: " + str(self.game_manager.player_points), font=self.fnt, fill=(255,0,0))
         scoreboard = scoreboard.transpose(Image.FLIP_LEFT_RIGHT)
         base.paste(scoreboard, (self.game_manager.dim[0]-310, self.game_manager.dim[1] - 60))
 
@@ -70,7 +94,7 @@ class GameManager:
 
     def __init__(self, dim):
         self.player = []
-        self.bubbles = beatmap2bubbles('assets/beatmap.csv')
+        self.bubbles = beatmap2bubbles('assets/beatmap_2.csv')
         self.dead_bubbles = []
         self.player_points = 0
         self.dim = dim
@@ -80,9 +104,9 @@ class GameManager:
 
         # move bubbles down
         for b in self.bubbles:
-            b.y += 100 * time_step # SPEED
+            b.y += 200 * time_step # SPEED
 
-            if b.y > 0 and b.y < self.dim[1]:
+            if b.y > self.dim[1]/2 and b.y < self.dim[1]:
                 for p in self.player:
                     if b.detect_collision(p):
                         self.player_points = min(self.player_points + 1, 999999)
@@ -120,5 +144,5 @@ def beatmap2bubbles(fname):
             line = d.split(',')
             for i in range(1, 5):
                 if line[i]:
-                    bubbles.append(Bubble(20 + 150 * i - 75, int(float(line[0]) * -190 + 400), 20))
+                    bubbles.append(Bubble(20 + 150 * i - 75, int(eval(line[0]) * -380 + 400), 50)) # really jank parsing
     return bubbles
