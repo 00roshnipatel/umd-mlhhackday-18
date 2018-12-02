@@ -110,11 +110,6 @@ class GameManager:
     def update(self, points, time_step):
         self.player = points
 
-        # detect end game
-        if len(self.dead_bubbles) + len(self.bubbles) == 0:
-            self.gameover = True
-            return
-
         # move bubbles down
         for b in self.bubbles:
             b.y += 200 * time_step # SPEED
