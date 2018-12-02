@@ -86,11 +86,11 @@ class Renderer:
 
 
         # render score
-        scoreboard = Image.open("assets/ui/panel.png").resize((300, 50), Image.NEAREST)
+        scoreboard = Image.open("assets/ui/scoreboard.png")
         context = ImageDraw.Draw(scoreboard)
-        context.text((15,5), "SCORE: " + str(self.game_manager.player_points), font=self.fnt, fill=(255,0,0))
+        context.text((140,-5), str(self.game_manager.player_points), font=self.fnt, fill=(0,255,0))
         scoreboard = scoreboard.transpose(Image.FLIP_LEFT_RIGHT)
-        base.paste(scoreboard, (self.game_manager.dim[0]-310, self.game_manager.dim[1] - 60))
+        base.paste(scoreboard, (self.game_manager.dim[0]-310, self.game_manager.dim[1] - 60), scoreboard)
 
         base = base.resize(( int(base.size[0]*1.5), int(base.size[1]*1.5) ), Image.NEAREST)
 
