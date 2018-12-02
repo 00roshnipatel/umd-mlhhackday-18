@@ -36,10 +36,10 @@ curr_time = time.time()
 
 # === Music ===
 #define stream chunk
-chunk = 1024
+chunk = 2048
 
 #open a wav format music
-fname = "assets/bubbles.wav"
+fname = "assets/bubbles_long.wav"
 f = wave.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), fname),"rb")
 #instantiate PyAudio
 p = pyaudio.PyAudio()
@@ -58,7 +58,6 @@ while cap.isOpened():
     ret, frame = cap.read()
     thresh = fgbg.apply(frame)
     im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #img = cv2.drawContours(frame, cull_noise(contours), -1, (255, 255,255), 3)
 
     # update time
     delta_time = time.time() - curr_time
