@@ -66,16 +66,23 @@ class Renderer:
         for p in self.game_manager.player:
             pix[int(p[0]), int(p[1])] = (255,255,255)
 
-        # render bubbles
-        for b in self.game_manager.bubbles:
-            if b.y > 0 and b.y < self.game_manager.dim[1]:
-                b.sprite_num = (b.sprite_num + 1) % len(self.bubble_imgs)
-                base.paste(self.bubble_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)), self.bubble_imgs[b.sprite_num])
+        if self.game_manager.gameover:
+            scoreboard = Image.open("assets/ui/panel.png").resize((200, 50), Image.NEAREST)
+            context = ImageDraw.Draw(scoreboard)
+            context.text((15,5), "Game Over", font=self.fnt, fill=(255,0,0))
+            scoreboard = scoreboard.transpose(Image.FLIP_LEFT_RIGHT)
+            base.paste(scoreboard, (int(self.game_manager.dim[0]/2 - 100), int(self.game_manager.dim[1]/2 - 25)))
+        else:
+            # render bubbles
+            for b in self.game_manager.bubbles:
+                if b.y > 0 and b.y < self.game_manager.dim[1]:
+                    b.sprite_num = (b.sprite_num + 1) % len(self.bubble_imgs)
+                    base.paste(self.bubble_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)), self.bubble_imgs[b.sprite_num])
 
-        for b in self.game_manager.dead_bubbles:
-            if b.y > 0 and b.y < self.game_manager.dim[1]:
-                b.sprite_num = min(b.sprite_num + 1, len(self.bubble_pop_imgs)-1)
-                base.paste(self.bubble_pop_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)), self.bubble_pop_imgs[b.sprite_num])
+            for b in self.game_manager.dead_bubbles:
+                if b.y > 0 and b.y < self.game_manager.dim[1]:
+                    b.sprite_num = min(b.sprite_num + 1, len(self.bubble_pop_imgs)-1)
+                    base.paste(self.bubble_pop_imgs[b.sprite_num], (int(b.x - b.r/2),int(b.y - b.r/2)), self.bubble_pop_imgs[b.sprite_num])
 
 
         # render score
@@ -98,9 +105,15 @@ class GameManager:
         self.dead_bubbles = []
         self.player_points = 0
         self.dim = dim
+        self.gameover = False
 
     def update(self, points, time_step):
         self.player = points
+
+        # detect end game
+        if len(self.dead_bubbles) + len(self.bubbles) == 0:
+            self.gameover = True
+            return
 
         # move bubbles down
         for b in self.bubbles:
