@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import time
-import wave, pyaudio
+import pyaudio, wave
 import os
 import threading
 
@@ -23,11 +23,12 @@ def flatten_contour(l):
             points.append(( p[0][0],p[0][1] ))
     return points
 
-SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 480
-
 cap = cv2.VideoCapture(0)
 fgbg = cv2.createBackgroundSubtractorMOG2(history=20, varThreshold=25, detectShadows=True)
+
+# set up screen
+SCREEN_WIDTH = int(cap.get(3))
+SCREEN_HEIGHT = int(cap.get(4))
 
 game_manager = GameManager((SCREEN_WIDTH, SCREEN_HEIGHT))
 renderer = Renderer(game_manager)

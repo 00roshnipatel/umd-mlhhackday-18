@@ -1,6 +1,3 @@
-from scipy.io import wavfile
-import pyaudio, wave
-import os
 
 is_playing = True
 
